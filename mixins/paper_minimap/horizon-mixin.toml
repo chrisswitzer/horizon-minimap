@@ -1,0 +1,173 @@
+[mod]
+id = "paper_minimap"
+version = "0.2.0"
+priority = 100
+
+# Targets the installed Nightly; full integration build still required.
+# World geometry and terrain access are version-sensitive.
+[compatibility]
+horizon_revision = "fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca"
+
+[[module]]
+id = "core"
+file = "crates/horizon-client/src/game.rs"
+name = "paper_minimap"
+source = "runtime.rs"
+
+[[module]]
+id = "ui"
+file = "crates/horizon-client/src/game.rs"
+name = "paper_map_ui"
+source = "adapter.rs"
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "tick"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+helper = "tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "key"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_key"
+helper = "key.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "key", ty = "&str", value = "key" },
+  { name = "pressed", ty = "bool", value = "pressed" },
+]
+
+[[injection]]
+id = "hud"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_hud"
+helper = "hud.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "corners", ty = "&mut horizon_client::extras_hud::Corners", value = "&mut *corners" },
+]
+
+[[injection]]
+id = "screen"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_render_post"
+helper = "screen.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+]
+
+[[injection]]
+id = "settings"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings"
+helper = "settings.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "buttons", ty = "&mut Vec<String>", value = "&mut *buttons" },
+]
+
+[[injection]]
+id = "click"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings_click"
+helper = "click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "button", ty = "usize", value = "button" },
+]
+
+[[injection]]
+id = "mouse-press"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_mouse_button_pressed_pre"
+helper = "mouse-press.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "button", ty = "i32", value = "button" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "mouse-release"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_mouse_button_released_pre"
+helper = "mouse-release.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "mouse-drag"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_mouse_dragged_pre"
+helper = "mouse-drag.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "button", ty = "i32", value = "button" },
+  { name = "delta", ty = "[f32; 2]", value = "delta" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "scroll"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_mouse_scrolled_pre"
+helper = "scroll.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "scroll", ty = "[f64; 2]", value = "scroll" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "screen-key"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_key_pressed_pre"
+helper = "screen-key.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "key", ty = "&str", value = "key" },
+  { name = "repeat", ty = "bool", value = "repeat" },
+  { name = "modifiers", ty = "u32", value = "modifiers" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "character"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_char_typed_pre"
+helper = "character.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "c", ty = "char", value = "c" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "world-geometry"
+kind = "HEAD"
+target = "horizon_client::game::native_world_draw::Game<'_>::native_world_geometry"
+helper = "world-geometry.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "camera", ty = "glam::DVec3", value = "camera" },
+  { name = "partial", ty = "f32", value = "partial" },
+  { name = "out", ty = "&mut Vec<horizon_client::mesher::Vertex>", value = "&mut *out" },
+]
