@@ -1,0 +1,30 @@
+name: Horizon integration
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  horizon:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: mod
+      - uses: actions/checkout@v4
+        with:
+          repository: horizon-rust/horizon-mods
+          path: upstream-mods
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev libgl1-mesa-dev pkg-config rsync clang cmake
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply mixins and compile-check pinned Horizon
+        run: python upstream-mods/native/tools/native.py check "$GITHUB_WORKSPACE/mod"
