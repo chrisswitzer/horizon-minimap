@@ -1,0 +1,18 @@
+Paper Minimap 0.2.0 - validation record
+
+Target: Horizon fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca, hooks 411, Minecraft 26.3.
+
+Completed locally:
+- Reviewed targeted hook signatures and world-render/terrain access against upstream source.
+- Checked all 2 module and 14 helper references exist.
+- Created .hnmod and read back all 19 entries, comparing exact source bytes.
+- Archive SHA256: D06EA7DA3EABD61860F3EDC0C37CD9C09526D803F5CEAAE22E8574621C9F94F4
+
+Not yet run locally:
+- 12 Rust behavior tests (Rust/Cargo unavailable).
+- Official Horizon integration compile check.
+- In-game acceptance checklist in README.md.
+
+GitHub Actions contains Windows/Linux core tests and source packaging; consult the actual run status.
+The Horizon integration workflow is separately dispatched. Source archive validation is not game compilation.
+This is an unverified development source bundle, not a precompiled or tested playable release.
